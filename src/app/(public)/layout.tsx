@@ -3,7 +3,7 @@ import { Menu, Package2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import NavItems from '@/app/(public)/nav-items'
-import DarkModeToggle from '@/components/ui/dark-mode-toggle'
+import DarkModeToggle from '@/components/dark-mode-toggle'
 
 export default function Layout({
   children
