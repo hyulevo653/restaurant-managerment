@@ -37,12 +37,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
-import { formatCurrency, getVietnameseDishStatus } from '@/lib/utils'
+import { formatCurrency, getVietnameseDishStatus, handleErrorApi } from '@/lib/utils'
 import { useSearchParams } from 'next/navigation'
 import AutoPagination from '@/components/auto-pagination'
 import { DishListResType } from '@/schemaValidations/dish.schema'
 import EditDish from '@/app/manage/dishes/edit-dish'
 import AddDish from '@/app/manage/dishes/add-dish'
+import { useDeleteDishMutation, useDishListQuery } from '@/queries/useDish'
+import DOMPurify from 'dompurify';
+import { toast } from '@/components/ui/use-toast'
 
 type DishItem = DishListResType['data'][0]
 
@@ -89,7 +92,7 @@ export const columns: ColumnDef<DishItem>[] = [
     accessorKey: 'description',
     header: 'Mô tả',
     cell: ({ row }) => (
-      <div dangerouslySetInnerHTML={{ __html: row.getValue('description') }} className='whitespace-pre-line' />
+      <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(row.getValue('description')) }} className='whitespace-pre-line' />
     )
   },
   {
@@ -136,6 +139,23 @@ function AlertDialogDeleteDish({
   dishDelete: DishItem | null
   setDishDelete: (value: DishItem | null) => void
 }) {
+  const { mutateAsync } = useDeleteDishMutation()
+  const deleteDish = async () => {
+    if (dishDelete) {
+      try {
+        const result = await mutateAsync(dishDelete.id)
+        setDishDelete(null)
+        toast({
+          title: result.payload.message
+        })
+        location.reload()
+      } catch (error) {
+        handleErrorApi({
+          error
+        })
+      }
+    }
+  }
   return (
     <AlertDialog
       open={Boolean(dishDelete)}
@@ -149,13 +169,13 @@ function AlertDialogDeleteDish({
         <AlertDialogHeader>
           <AlertDialogTitle>Xóa món ăn?</AlertDialogTitle>
           <AlertDialogDescription>
-            Món <span className='bg-foreground text-primary-foreground rounded px-1'>{dishDelete?.name}</span> sẽ bị xóa
+            Món{' '}<span className='bg-foreground text-primary-foreground rounded px-1'>{dishDelete?.name}</span>{' '}sẽ bị xóa
             vĩnh viễn
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
+          <AlertDialogAction onClick={deleteDish}>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -169,7 +189,8 @@ export default function DishTable() {
   const pageIndex = page - 1
   const [dishIdEdit, setDishIdEdit] = useState<number | undefined>()
   const [dishDelete, setDishDelete] = useState<DishItem | null>(null)
-  const data: any[] = []
+  const dishListQuery = useDishListQuery()
+  const data = dishListQuery.data?.payload.data ?? []
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})

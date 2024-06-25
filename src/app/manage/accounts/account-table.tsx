@@ -163,6 +163,7 @@ function AlertDialogDeleteAccount({
         toast({
           title: result.payload.message
         })
+        location.reload()
       } catch (error) {
         handleErrorApi({
           error

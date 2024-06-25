@@ -103,6 +103,7 @@ export default function EditEmployee({
         description: result.payload.message
       })
       reset()
+      location.reload()
       onSubmitSuccess && onSubmitSuccess()
     } catch (error) {
       handleErrorApi({
