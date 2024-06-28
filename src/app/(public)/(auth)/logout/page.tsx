@@ -9,7 +9,7 @@ import { Suspense, useEffect, useRef } from 'react'
  function Logout() {
   const { mutateAsync } = useLogoutMutation()
   const router = useRouter()
-  const { setIsAuth } = useAppContext()
+  const { setRole } = useAppContext()
   const searchParams = useSearchParams()
   const refreshTokenFromUrl = searchParams.get('refreshToken')
   const accessTokenFromUrl = searchParams.get('accessToken')
@@ -27,13 +27,13 @@ import { Suspense, useEffect, useRef } from 'react'
         setTimeout(() => {
           ref.current = null
         }, 1000)
-        setIsAuth(false)
+        setRole()
         router.push('/login')
       })
     } else {
       router.push('/')
     }
-  }, [mutateAsync, router, refreshTokenFromUrl,accessTokenFromUrl,setIsAuth])
+  }, [mutateAsync, router, refreshTokenFromUrl,accessTokenFromUrl,setRole])
   return <div>Log out....</div>
 }
 export default function LogoutPage() {

@@ -1,20 +1,19 @@
 import http from '@/lib/http'
 import {
-  LoginBodyType,
-  LoginResType,
   LogoutBodyType,
   RefreshTokenBodyType,
   RefreshTokenResType
 } from '@/schemaValidations/auth.schema'
+import { GuestLoginBodyType, GuestLoginResType } from '@/schemaValidations/guest.schema'
 
-const authApiRequest = {
+const guestApiRequest = {
   refreshTokenRequest: null as Promise<{
     status: number
     payload: RefreshTokenResType
   }> | null,
-  sLogin: (body: LoginBodyType) => http.post<LoginResType>('/auth/login', body),
-  login: (body: LoginBodyType) =>
-    http.post<LoginResType>('/api/auth/login', body, {
+  sLogin: (body: GuestLoginBodyType) => http.post<GuestLoginResType>('/guest/auth/login', body),
+  login: (body: GuestLoginBodyType) =>
+    http.post<GuestLoginResType>('/api/guest/auth/login', body, {
       baseUrl: ''
     }),
   sLogout: (
@@ -23,7 +22,7 @@ const authApiRequest = {
     }
   ) =>
     http.post(
-      '/auth/logout',
+      '/guest/auth/logout',
       {
         refreshToken: body.refreshToken
       },
@@ -33,15 +32,15 @@ const authApiRequest = {
         }
       }
     ),
-  logout: () => http.post('/api/auth/logout', null, { baseUrl: '' }), // client gọi đến route handler, không cần truyền AT và RT vào body vì AT và RT tự  động gửi thông qua cookie rồi
+  logout: () => http.post('/api/guest/auth/logout', null, { baseUrl: '' }), // client gọi đến route handler, không cần truyền AT và RT vào body vì AT và RT tự  động gửi thông qua cookie rồi
   sRefreshToken: (body: RefreshTokenBodyType) =>
-    http.post<RefreshTokenResType>('/auth/refresh-token', body),
+    http.post<RefreshTokenResType>('/guest/auth/refresh-token', body),
   async refreshToken() {
     if (this.refreshTokenRequest) {
       return this.refreshTokenRequest
     }
     this.refreshTokenRequest = http.post<RefreshTokenResType>(
-      '/api/auth/refresh-token',
+      '/api/guest/auth/refresh-token',
       null,
       {
         baseUrl: ''
@@ -53,4 +52,4 @@ const authApiRequest = {
   }
 }
 
-export default authApiRequest
+export default guestApiRequest
