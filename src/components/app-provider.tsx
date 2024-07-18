@@ -16,11 +16,15 @@ import {
 } from '@/lib/utils'
 import { RoleType } from '@/types/jwt.types'
 
+//default
+//staletime: 0
+//gc : 5 phút (5*60*1000)
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
-      refetchOnMount: false
+      refetchOnMount: true
     }
   }
 })

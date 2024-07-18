@@ -159,7 +159,12 @@ const orderTableColumns: ColumnDef<OrderItem>[] = [
       <div className='space-y-2 text-sm'>
         <div className='flex items-center space-x-4'>{formatDateTimeToLocaleString(row.getValue('createdAt'))}</div>
         <div className='flex items-center space-x-4'>
-          {formatDateTimeToLocaleString(row.original.updatedAt as unknown as string)}
+        {formatDateTimeToLocaleString(row.getValue('createdAt'))}
+        </div>
+        <div className='flex items-center space-x-4'>
+          {formatDateTimeToLocaleString(
+            row.original.updatedAt as unknown as string
+          )}
         </div>
       </div>
     )
