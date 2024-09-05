@@ -19,6 +19,7 @@ import { cn, getVietnameseTableStatus, simpleMatchText } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { TableListResType } from '@/schemaValidations/table.schema'
 import { TableStatus } from '@/constants/type'
+import { useTableListQuery } from '@/queries/useTable'
 
 type TableItem = TableListResType['data'][0]
 
@@ -48,7 +49,8 @@ const PAGE_SIZE = 10
 
 export function TablesDialog({ onChoose }: { onChoose: (table: TableItem) => void }) {
   const [open, setOpen] = useState(false)
-  const data: TableListResType['data'] = []
+  const tableListQuery = useTableListQuery()
+  const data = tableListQuery.data?.payload.data ?? []
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -175,7 +177,13 @@ export function TablesDialog({ onChoose }: { onChoose: (table: TableItem) => voi
                 <AutoPagination
                   page={table.getState().pagination.pageIndex + 1}
                   pageSize={table.getPageCount()}
-                  pathname='/manage/Tables'
+                  onClick={(pageNumber) =>
+                    table.setPagination({
+                      pageIndex: pageNumber - 1,
+                      pageSize: PAGE_SIZE
+                    })
+                  }
+                  isLink={false}
                 />
               </div>
             </div>
