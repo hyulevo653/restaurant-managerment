@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { decodeToken } from "./lib/utils";
 import { Role } from "./constants/type";
+import jwt from 'jsonwebtoken'
+import { TokenPayload } from '@/types/jwt.types'
+
+const decodeToken = (token: string) => {
+  return jwt.decode(token) as TokenPayload
+}
 
 const managePaths = ["/manage"];
 const guestPaths = ["/guest"];

@@ -11,6 +11,7 @@ import { TokenPayload } from '@/types/jwt.types'
 import guestApiRequest from '@/apiRequests/guest'
 import { format } from 'date-fns'
 import { BookX, CookingPot, HandCoins, Loader, Truck } from 'lucide-react'
+import { io } from 'socket.io-client'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -68,6 +69,7 @@ export const removeTokensFromLocalStorage = () => {
 export const checkAndRefreshToken = async (param?: {
   onError?: () => void
   onSuccess?: () => void
+  force?: boolean
 }) => {
   // Không nên đưa logic lấy access và refresh token ra khỏi cái function `checkAndRefreshToken`
   // Vì để mỗi lần mà checkAndRefreshToken() được gọi thì chúng ta se có một access và refresh token mới
@@ -91,6 +93,7 @@ export const checkAndRefreshToken = async (param?: {
   // Thời gian còn lại sẽ tính dựa trên công thức: decodedAccessToken.exp - now
   // Thời gian hết hạn của access token dựa trên công thức: decodedAccessToken.exp - decodedAccessToken.iat
   if (
+    param?.force ||
     decodedAccessToken.exp - now <
     (decodedAccessToken.exp - decodedAccessToken.iat) / 3
   ) {
@@ -195,6 +198,14 @@ export const formatDateTimeToTimeString = (date: string | Date) => {
   return format(date instanceof Date ? date : new Date(date), 'HH:mm:ss')
 }
 
+export const generateSocketInstace = (accessToken: string) => {
+  return io(envConfig.NEXT_PUBLIC_API_ENDPOINT, {
+    auth: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  })
+}
+
 export const OrderStatusIcon = {
   [OrderStatus.Pending]: Loader,
   [OrderStatus.Processing]: CookingPot,
@@ -202,3 +213,4 @@ export const OrderStatusIcon = {
   [OrderStatus.Delivered]: Truck,
   [OrderStatus.Paid]: HandCoins
 }
+
