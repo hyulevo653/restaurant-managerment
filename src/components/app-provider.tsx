@@ -18,6 +18,7 @@ import {
 } from "@/lib/utils";
 import { RoleType } from "@/types/jwt.types";
 import type { Socket } from "socket.io-client";
+import ListenLogoutSocket from "@/hooks/useListenLogoutSocket";
 
 //default
 //staletime: 0
@@ -84,6 +85,7 @@ export default function AppProvider({
       <QueryClientProvider client={queryClient}>
         {children}
         <RefreshToken />
+        <ListenLogoutSocket />
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </AppContext.Provider>
